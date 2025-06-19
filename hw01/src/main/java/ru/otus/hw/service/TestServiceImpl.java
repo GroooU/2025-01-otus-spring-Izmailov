@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
+import ru.otus.hw.exceptions.QuestionReadException;
 
 import java.util.List;
 
@@ -18,9 +19,14 @@ public class TestServiceImpl implements TestService {
     public void executeTest() {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
-        // Получить вопросы из дао и вывести их с вариантами ответов
 
-        List<Question> questions = questionDao.findAll();
+        List<Question> questions;
+        try {
+            questions = questionDao.findAll();
+        } catch (QuestionReadException e) {
+            ioService.printFormattedLine("An error occurred while retrieving questions: %s%n", e.getMessage());
+            return;
+        }
 
         for (Question question : questions) {
             ioService.printFormattedLine("%s %n", question.text());
